@@ -1,0 +1,77 @@
+==================================== Search ======================================
+REQUEST: /search/Distributed Systems  (search for topic: Distributed Systems)
+RESPONSE: The books found for the topic Distributed Systems are ....... 
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "20", 
+      "itemNumber": "1", 
+      "stock": "13", 
+      "title": "How to get a good grade in 677 in 20 minutes a day.", 
+      "topic": "Distributed Systems"
+    }, 
+    {
+      "cost": "15", 
+      "itemNumber": "2", 
+      "stock": "15", 
+      "title": "RPCs for Dummies", 
+      "topic": "Distributed Systems"
+    }
+  ]
+}
+REQUEST: /search/Graduate School (search for topic: Graduate School)
+RESPONSE: The books found for the topic Graduate School are ....... 
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "10", 
+      "itemNumber": "3", 
+      "stock": "14", 
+      "title": "Xen and the Art of Surviving Graduate School.", 
+      "topic": "Graduate School"
+    }, 
+    {
+      "cost": "5", 
+      "itemNumber": "4", 
+      "stock": "15", 
+      "title": "Cooking for the Impatient Graduate Student.", 
+      "topic": "Graduate School"
+    }
+  ]
+}
+================================== Lookup ================================
+REQUEST: /lookup/1 (search for item: 1)
+RESPONSE: The books found for the item number 1 are....... 
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "20", 
+      "itemNumber": "1", 
+      "stock": "13", 
+      "title": "How to get a good grade in 677 in 20 minutes a day.", 
+      "topic": "Distributed Systems"
+    }
+  ]
+}
+REQUEST: /lookup/3  (search for item: 3)
+RESPONSE: The books found for the item number 3 are....... 
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "10", 
+      "itemNumber": "3", 
+      "stock": "14", 
+      "title": "Xen and the Art of Surviving Graduate School.", 
+      "topic": "Graduate School"
+    }
+  ]
+}
+================================== Buy ================================
+REQUEST: /buy/1 (Initiated buy request for item: 1)
+RESPONSE: Bought book How to get a good grade in 677 in 20 minutes a day.
+REQUEST: /buy/3 (Initiated buy request for item: 3)
+RESPONSE: Bought book Xen and the Art of Surviving Graduate School.

@@ -1,0 +1,30 @@
+[
+    {
+        "itemNumber": "1",
+        "title": "How to get a good grade in 677 in 20 minutes a day.",
+        "stock": "15",
+        "cost": "20",
+        "topic": "Distributed Systems"
+    },
+    {
+        "itemNumber": "2",
+        "title": "RPCs for Dummies",
+        "stock": "15",
+        "cost": "15",
+        "topic": "Distributed Systems"
+    },
+    {
+        "itemNumber": "3",
+        "title": "Xen and the Art of Surviving Graduate School.",
+        "stock": "15",
+        "cost": "10",
+        "topic": "Graduate School"
+    },
+    {
+        "itemNumber": "4",
+        "title": "Cooking for the Impatient Graduate Student.",
+        "stock": "15",
+        "cost": "5",
+        "topic": "Graduate School"
+    }
+]

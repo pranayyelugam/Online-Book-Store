@@ -1,0 +1,9 @@
+reduceStock/1
+updateCost/1/25
+updateStock/1/25
+reduceStock/1
+reduceStock/3
+reduceStock/1
+reduceStock/1
+updateCost/1/25
+updateStock/1/2

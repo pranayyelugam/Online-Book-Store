@@ -1,0 +1,97 @@
+######################### SEARCH TESTCASES FRONTEND SERVER ########################################
+
+TEST CASE 1 ---  Request should return 2 items with Distributed Systems as topic
+
+=========================================================================
+REQUEST: /search/Distributed Systems  (search for topic: Distributed Systems)
+EXPECTED RESPONSE: 2 Items with topic distributed systems 
+=========================================================================
+Test Case 1 Passed
+Response for the request
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "20", 
+      "itemNumber": "1", 
+      "stock": "13", 
+      "title": "How to get a good grade in 677 in 20 minutes a day.", 
+      "topic": "Distributed Systems"
+    }, 
+    {
+      "cost": "15", 
+      "itemNumber": "2", 
+      "stock": "15", 
+      "title": "RPCs for Dummies", 
+      "topic": "Distributed Systems"
+    }
+  ]
+}
+
+################################### LOOKUP TESTCASES FRONTEND SERVER #################################
+
+TEST CASE 2 ---  Request should return 1 items which has item number 1
+
+=======================================================================
+REQUEST: /lookup/1 (search for item: 1)
+EXPECTED RESPONSE: 1 item with itemNumber 1 
+========================================================================
+Test Case 2 Passed
+Response for the request
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "20", 
+      "itemNumber": "1", 
+      "stock": "13", 
+      "title": "How to get a good grade in 677 in 20 minutes a day.", 
+      "topic": "Distributed Systems"
+    }
+  ]
+}
+
+################################## BUY TESTCASES FRONTEND  SERVER #################################
+
+TEST CASE 3 ---  Server should return the updated item with the updated stock  
+========================================================================
+
+REQUEST: /buy/1 (Initiated buy request for item: 1)
+Intital stock of the item number 1 is 13
+Test Case 3 passed
+Response for the request
+{
+  "msg": "", 
+  "res": [
+    {
+      "cost": "20", 
+      "itemNumber": "1", 
+      "stock": "12", 
+      "title": "How to get a good grade in 677 in 20 minutes a day.", 
+      "topic": "Distributed Systems"
+    }
+  ]
+}
+
+################################### UPDATECOST TESTCASES CATALOG SERVER #################################
+
+TEST CASE 4 ---  Update the cost of the item correctly 1
+
+=======================================================================
+REQUEST: /updateCost/1/25 (update cost of the item: 1)
+EXPECTED RESPONSE: updated cost with 25 
+========================================================================
+Test Case 4 Passed
+Response for the request
+[{"itemNumber": "1", "title": "How to get a good grade in 677 in 20 minutes a day.", "stock": "11", "cost": "25", "topic": "Distributed Systems"}]
+################################### UPDATESTOCK TESTCASES CATALOG SERVER #################################
+
+TEST CASE 5 ---  Update the stock of the item correctly 1
+
+=======================================================================
+REQUEST: /updateStock/1/25 (update stock of the item: 1)
+EXPECTED RESPONSE: updated stock with 25 
+========================================================================
+Test Case 5 Passed
+Response for the request
+[{"itemNumber": "1", "title": "How to get a good grade in 677 in 20 minutes a day.", "stock": "25", "cost": "25", "topic": "Distributed Systems"}]
