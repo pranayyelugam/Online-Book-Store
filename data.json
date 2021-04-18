@@ -26,5 +26,26 @@
         "stock": "15",
         "cost": "5",
         "topic": "Graduate School"
+    },
+    {
+        "itemNumber": "5",
+        "title": "How to finish Project 3 on time.",
+        "stock": "15",
+        "cost": "5",
+        "topic": "Distributed Systems"
+    },
+    {
+        "itemNumber": "6",
+        "title": "Why theory classes are so hard",
+        "stock": "15",
+        "cost": "5",
+        "topic": "Graduate School"
+    },
+    {
+        "itemNumber": "7",
+        "title": "Spring in the Pioneer Valley.",
+        "stock": "15",
+        "cost": "5",
+        "topic": "Graduate School"
     }
 ]

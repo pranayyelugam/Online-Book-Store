@@ -2,6 +2,7 @@ from flask import Flask, jsonify, g
 import json, sys, os, time
 from json import JSONEncoder
 import sqlite3
+import requests
 from flask import g
 
 app = Flask(__name__)
@@ -207,6 +208,7 @@ def queryByItemTopic(topic):
 # ROUTE: /updateStock/itemNumber/value
 @app.route('/updateStock/<int:itemNumber>/<int:value>')
 def updateStockRoute(itemNumber, value, dataLoading=False):
+    requests.get(app.config.get('frontend_uri') + '/invalidate/' + str(itemNumber))
     response = updateStock(itemNumber, value)
     storeInDatabase('updateStock/' + str(itemNumber)+ '/' + str(value), requestsPath)
     return CatalogItemEncoder().encode(response)
@@ -214,6 +216,7 @@ def updateStockRoute(itemNumber, value, dataLoading=False):
 # ROUTE: /reduceStock/itemNumber
 @app.route('/reduceStock/<int:itemNumber>')
 def reduceOneStock(itemNumber, dataLoading=False):
+    requests.get(app.config.get('frontend_uri') + '/invalidate/' + str(itemNumber))
     response = reduceStock(itemNumber)
     storeInDatabase('reduceStock/' + str(itemNumber), requestsPath)
     return CatalogItemEncoder().encode(response)
@@ -221,6 +224,7 @@ def reduceOneStock(itemNumber, dataLoading=False):
 # ROUTE: /updateCost/itemNumber/value
 @app.route('/updateCost/<int:itemNumber>/<int:value>')
 def updateCostRoute(itemNumber, value, dataLoading=False):
+    requests.get(app.config.get('frontend_uri') + '/invalidate/' + str(itemNumber))
     response = updateCost(itemNumber, value)
     storeInDatabase('updateCost/' + str(itemNumber)+ '/' + str(value), requestsPath)
     return CatalogItemEncoder().encode(response)
@@ -245,6 +249,7 @@ if __name__ == "__main__":
         Insert the data in to the table only when the table is created for the first time.
         And start the Flask service.
     """
+    app.config['frontend_uri'] = sys.argv[1]
     try:
         with app.app_context():
             cur = get_db().cursor()
@@ -272,12 +277,9 @@ if __name__ == "__main__":
                 else:
                     get_db().commit()
                     print('data inserted')
-            cur.close()
     except Exception as E:
         print('Error :,')
         print( E)
-       
-
-
     
-    app.run(host='0.0.0.0', port=8080, threaded = True)
+    
+    app.run(host='0.0.0.0', port=8080, debug=True, threaded = True)
