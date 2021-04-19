@@ -1,24 +1,25 @@
 import os, time, sys
 from flask import Flask
 import requests
+import threading
 
 app = Flask(__name__)
 
 class Replica:
-    def __init__(self, host, port, path='isAlive'):
+    def __init__(self, host, port, path='/'):
         self.host = host
         self.port = port
         self.path = path
         self.connections = 0
-        self.serverTimeout = 1
+        self.serverTimeout = 5
         self.alive = True
         self.protocol = "http://"
 
-    def isAliveReplica(self):
+    def isReplicaAlive(self):
         ''' Checks if the replica is alive or not by sending a request'''
         try:
-            res = requests.get(self.host+ ":" + self.port + self.path, timeout = self.serverTimeout)
-            if res.ok:
+            res = requests.get(self.getUrl()+self.path, timeout = self.serverTimeout)
+            if res.status_code == 200:
                 self.alive =  True
             else:
                 self.alive =  False
@@ -35,6 +36,16 @@ class LoadBalancer:
     def __init__(self):
         self.replicas = []
         count = 0
+
+    def heartbeat(self):
+        while True:
+            for i,replica in enumerate(self.replicas):
+                if replica.isReplicaAlive() == False:
+                    print(replica.getUrl())
+                    print("dead")
+                    self.removeReplica(i)
+
+            time.sleep(5)
 
     def getTargetReplicaUsingRoundRobin(self):
         ''' Gets a replica from the list of replicas using Round Robin '''
@@ -72,7 +83,6 @@ class LoadBalancer:
         targetReplica = self.getLeastLoadedReplica()
         targetUri = targetReplica.getUrl()
         url = targetUri + request
-        print(url)
         try:
             targetReplica.connections += 1
             res =  requests.get(url)
@@ -115,11 +125,16 @@ if __name__ == "__main__":
     orderLoadBalancer = OrderloadBalanceManager()
 
     # Add details of hosts and ports to each of replicas
-    catalogLoadBalancer.addCatalogReplicas("0.0.0.0:8080|0.0.0.0:8087")
+    catalogLoadBalancer.addCatalogReplicas("0.0.0.0:8080|0.0.0.0:8089")
     orderLoadBalancer.addOrderReplicas("0.0.0.0:8082|0.0.0.0:8087")
 
-    ##TODO##  
-    # Get host and ports of the replicas and assign
+    # Start checking for the catalog replicas heartbeat
+    catalogHeartbeatThread = threading.Thread(target = catalogLoadBalancer.heartbeat)
+    catalogHeartbeatThread.start()
+
+    # Start checking for the catalog replicas heartbeat
+    orderHeartbeatThread = threading.Thread(target = orderLoadBalancer.heartbeat)
+    orderHeartbeatThread.start()
 
     @app.route('/')
     def alive():
@@ -129,8 +144,7 @@ if __name__ == "__main__":
     def loadBalancer(request):
         requestType = str(request).split('@')[1]
         request = request.replace('@', '/')
-        print(requestType)
-        if requestType in ['query','reduceStock']:
+        if requestType in ['query','reduceStock', 'updateStock', 'updateCost']:
            return catalogLoadBalancer.processRequest(request)
         elif requestType in ['buy']:
             return orderLoadBalancer.processRequest(request)
