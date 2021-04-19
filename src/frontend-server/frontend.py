@@ -12,7 +12,7 @@ def search(topic):
     cacheItem =  cache.get(str(topic))
     if cacheItem != "not found":
         return cacheItem
-    res = requests.get(app.config.get('catalog_uri') + '/query/' + str(topic))
+    res = requests.get(app.config.get('loadbalancer_uri') + '/@query@' + str(topic))
     res = prettifyOutput(res, 'Item not present for topic %s' % topic)
     cache.put(str(topic), res)
     return res
@@ -23,7 +23,7 @@ def lookup(itemNumber):
     cacheItem =  cache.get(str(itemNumber))
     if cacheItem != "not found":
         return cacheItem
-    res = requests.get(app.config.get('catalog_uri') + '/query/' + str(itemNumber))
+    res = requests.get(app.config.get('loadbalancer_uri') + '/@query@' + str(itemNumber))
     res = prettifyOutput(res, 'Item not present for item number %d' % itemNumber)
     cache.put(str(itemNumber), res)
     return res
@@ -31,7 +31,7 @@ def lookup(itemNumber):
 # ROUTE: /buy/itemNumber
 @app.route('/buy/<string:itemNumber>')
 def buy(itemNumber):
-    res = requests.get(app.config.get('order_uri') + '/buy/' + itemNumber)
+    res = requests.get(app.config.get('loadbalancer_uri') + '/@buy@' + itemNumber)
     res = prettifyOutput(res, 'The item is out of stock')
     return res
 
@@ -60,4 +60,5 @@ def prettifyOutput(response, errorMsg):
 if __name__ == "__main__":
     app.config['catalog_uri'] = sys.argv[1]
     app.config['order_uri'] = sys.argv[2]
+    app.config['loadbalancer_uri'] = sys.argv[3]
     app.run(host='0.0.0.0', port=8081, debug=True)
