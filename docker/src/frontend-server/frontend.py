@@ -40,9 +40,6 @@ def eraseKeyFromCache(key):
     cache.erase(str(key))
     return "True"
 
-@app.route('/')
-def root():
-    return "True"
 
 def prettifyOutput(response, errorMsg):
     jsonResponse =  response.json()
@@ -61,5 +58,7 @@ def prettifyOutput(response, errorMsg):
     return res
 
 if __name__ == "__main__":
-    app.config['loadbalancer_uri'] = sys.argv[1]
-    app.run(host='0.0.0.0', port=8081)
+    app.config['catalog_uri'] = sys.argv[1]
+    app.config['order_uri'] = sys.argv[2]
+    app.config['loadbalancer_uri'] = sys.argv[3]
+    app.run(host='0.0.0.0', port=8081, debug=True)

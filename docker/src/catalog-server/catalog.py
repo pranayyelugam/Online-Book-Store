@@ -5,7 +5,6 @@ import sqlite3
 import requests
 from flask import g
 import threading
-import random
 
 app = Flask(__name__)
 
@@ -13,6 +12,11 @@ app = Flask(__name__)
 writeLock = threading.Lock()
 
 
+scriptDir = os.path.dirname(__file__)
+outputPath = './database.db'
+DATABASE = os.path.join(scriptDir, outputPath)
+rel_requests_path = 'requests.txt'
+requestsPath = os.path.join(scriptDir, rel_requests_path)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -222,15 +226,12 @@ def reduceOneStock(itemNumber, dataLoading=False):
     # Implement Primary based consistency
     with writeLock:
         response = reduceStock(itemNumber)
-        ## TODO ##
-        # How do I get the endpoint of other servers here?
-        catalogList = app.config.get('replicaList')
+        catalogList = "0.0.0.0:8080|0.0.0.0:8089"
         endpoints = catalogList.split('|')
         endpointUrlsExcludingCurrentServer = []
         for x in endpoints:
             host,port = x.split(':')
             if(port==app.config.get('port')  and host == app.config.get('host')):
-                print("I am here")
                 continue
             else:
                 endpointUrlsExcludingCurrentServer.append(getUrl(host, port))
@@ -288,17 +289,6 @@ if __name__ == "__main__":
         And start the Flask service.
     """
     app.config['frontend_uri'] = sys.argv[1]
-    app.config['loadbalancer_uri']= sys.argv[2]
-    app.config['host'] = sys.argv[3]
-    app.config['port'] = sys.argv[4]
-    app.config['replicaList'] = sys.argv[5]
-
-    scriptDir = os.path.dirname(__file__)
-    outputPath = './database_{}.db'.format(app.config.get("port"))
-    DATABASE = os.path.join(scriptDir, outputPath)
-    rel_requests_path = 'requests.txt'
-    requestsPath = os.path.join(scriptDir, rel_requests_path)
-
     try:
         with app.app_context():
             cur = get_db().cursor()
@@ -330,9 +320,7 @@ if __name__ == "__main__":
         print('Error :,')
         print( E)
     
-    host = app.config['host']
-    port = app.config['port']
+    app.config['port'] = '8080'
+    app.config['host'] = '0.0.0.0'
     
-    res = requests.get(app.config.get('loadbalancer_uri') + '/@register_catalog@' + host + ':' + port)
-    
-    app.run(host=host, port=port, threaded = True)
+    app.run(host='0.0.0.0', port=8080, debug=True, threaded = True)

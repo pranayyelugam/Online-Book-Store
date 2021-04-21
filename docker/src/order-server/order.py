@@ -1,5 +1,5 @@
 from flask import Flask
-import json, sys, requests, random
+import json, sys, requests
 app = Flask(__name__)
 
 
@@ -31,15 +31,8 @@ def buyRequestForItem(itemNumber):
         return {}
         
 
+
 if __name__ == "__main__":
-    app.config['loadbalancer_uri'] = sys.argv[1]
-    app.config['host'] = sys.argv[2]
-    app.config['port'] = sys.argv[3]
-    app.config['replicaList'] = sys.argv[4]
-
-    host = app.config['host']
-    port = app.config['port']
-    
-    res = requests.get(app.config.get('loadbalancer_uri') + '/@register_order@' + host + ':' + port)
-
-    app.run(host=host, port=port)
+    app.config['catalog_uri'] = sys.argv[1]
+    app.config['loadbalancer_uri'] = sys.argv[2]
+    app.run(host='0.0.0.0', port=8082, debug=True)
