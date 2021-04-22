@@ -37,6 +37,7 @@ class LoadBalancer:
     def __init__(self):
         self.replicas = []
         self.count = 0
+        self.lbType =""
 
     def heartbeat(self):
         while True:
@@ -47,10 +48,12 @@ class LoadBalancer:
             time.sleep(5)
 
     def getTargetReplicaUsingRoundRobin(self):
+        ## TODO ## catalog requests are not being load balanced
         ''' Gets a replica from the list of replicas using Round Robin '''
         if not self.replicas:
             return None
         targetReplica = self.replicas[self.count % len(self.replicas)]
+        print(str(self.count) + " " + self.lbType )
         self.count += 1
         return targetReplica
 
@@ -61,11 +64,15 @@ class LoadBalancer:
         minConnectionReplica = min((replica for replica in self.replicas if replica.alive == True), key=lambda r: r.connections)
         return minConnectionReplica
         
-    def addReplica(self, host, port):
+    def registerReplica(self, host, port):
         ''' Adds the input replica to the list of replicas '''
         replica = Replica(host, port)
         if self.isReplicaPresentAlready(replica) == False:
+            for x in self.replicas:
+                print(x.getUrl())
             self.replicas.append(replica)
+            return "True"
+        return "False"
 
     def removeReplica(self, replica):
         ''' Removes the replica from the list of replicas as the replica is down'''
@@ -82,7 +89,6 @@ class LoadBalancer:
     def processRequest(self, request):
         targetReplica = self.getTargetReplicaUsingRoundRobin()
         targetUri = targetReplica.getUrl()
-        print(targetUri)
         url = targetUri + request
         try:
             targetReplica.connections += 1
@@ -110,11 +116,10 @@ class CatalogLoadBalanceManager(LoadBalancer):
         # Add the files in the sh files
         self.spawnCommand = "python ../catalog-server-B/catalog.py http://0.0.0.0:8081"
 
-    def addCatalogReplicas(self, catalogList):
-        endpoints = catalogList.split('|')
-        for x in endpoints:
-            host,port = x.split(':')
-            self.addReplica(host, port)
+    def registerCatalogReplicas(self, request):
+        host,port = request.split(':')
+        return self.registerReplica(host, port)
+
 
     def spawnReplicas(self):
         while True:
@@ -140,11 +145,9 @@ class OrderloadBalanceManager(LoadBalancer):
         super().__init__()
         self.lbType = "Order"
 
-    def addOrderReplicas(self, orderList):
-        endpoints = orderList.split('|')
-        for x in endpoints:
-            host,port = x.split(':')
-            self.addReplica(host, port)
+    def registerOrdereplicas(self, request):
+        host,port = request.split(':')
+        return self.registerReplica(host, port)
 
     def spawnReplicas(self):
         while True:
@@ -160,10 +163,6 @@ if __name__ == "__main__":
     # Create objects for catalog and order LBs
     catalogLoadBalancer = CatalogLoadBalanceManager()
     orderLoadBalancer = OrderloadBalanceManager()
-
-    # Add details of hosts and ports to each of replicas
-    catalogLoadBalancer.addCatalogReplicas("0.0.0.0:8080|0.0.0.0:8089")
-    orderLoadBalancer.addOrderReplicas("0.0.0.0:8082|0.0.0.0:8087")
 
 
     '''    
@@ -197,8 +196,16 @@ if __name__ == "__main__":
            return catalogLoadBalancer.processRequest(request)
         elif requestType in ['buy']:
             return orderLoadBalancer.processRequest(request)
+        # Add details of hosts and ports to each of replicas
+        elif requestType in ['register_catalog']:
+            print("nenu ikkadiki vachina")
+            replicaUrl = str(request).split('/')[2]
+            return catalogLoadBalancer.registerCatalogReplicas(replicaUrl)
+        elif requestType in ['register_order']:
+            replicaUrl = str(request).split('/')[2]
+            return orderLoadBalancer.registerOrdereplicas(replicaUrl)
         else: 
             return "Invalid Route"
         
-    app.run(host='0.0.0.0', port=8085, debug=True)
+    app.run(host='0.0.0.0', port=8080)
         

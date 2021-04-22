@@ -5,6 +5,7 @@ import sqlite3
 import requests
 from flask import g
 import threading
+import random
 
 app = Flask(__name__)
 
@@ -12,11 +13,6 @@ app = Flask(__name__)
 writeLock = threading.Lock()
 
 
-scriptDir = os.path.dirname(__file__)
-outputPath = './database.db'
-DATABASE = os.path.join(scriptDir, outputPath)
-rel_requests_path = 'requests.txt'
-requestsPath = os.path.join(scriptDir, rel_requests_path)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -213,7 +209,29 @@ def queryByItemTopic(topic):
 @app.route('/updateStock/<int:itemNumber>/<int:value>')
 def updateStockRoute(itemNumber, value, dataLoading=False):
     requests.get(app.config.get('frontend_uri') + '/invalidate/' + str(itemNumber))
-    response = updateStock(itemNumber, value)
+
+    with writeLock:
+        response = updateStock(itemNumber, value)
+        ## TODO ##
+        # How do I get the endpoint of other servers here?
+        print("------")
+        catalogList = app.config.get('replicaList')
+        endpoints = catalogList.split('|')
+        endpointUrlsExcludingCurrentServer = []
+        for x in endpoints:
+            host,port = x.split(':')
+            if(port==app.config.get('port')  and host == app.config.get('host')):
+                print("I am here")
+                continue
+            else:
+                endpointUrlsExcludingCurrentServer.append(getUrl(host, port))
+        
+        for endpoint in endpointUrlsExcludingCurrentServer:
+            try:
+                replicaUpdateRequest =  requests.get(endpoint + '/update_replica_stock/' + str(itemNumber) + '/' + str(value))
+            except Exception as E:
+                print('Exception occurred while writing to replica')
+
     storeInDatabase('updateStock/' + str(itemNumber)+ '/' + str(value), requestsPath)
     return CatalogItemEncoder().encode(response)
 
@@ -226,12 +244,15 @@ def reduceOneStock(itemNumber, dataLoading=False):
     # Implement Primary based consistency
     with writeLock:
         response = reduceStock(itemNumber)
-        catalogList = "0.0.0.0:8080|0.0.0.0:8089"
+        ## TODO ##
+        # How do I get the endpoint of other servers here?
+        catalogList = app.config.get('replicaList')
         endpoints = catalogList.split('|')
         endpointUrlsExcludingCurrentServer = []
         for x in endpoints:
             host,port = x.split(':')
             if(port==app.config.get('port')  and host == app.config.get('host')):
+                print("I am here")
                 continue
             else:
                 endpointUrlsExcludingCurrentServer.append(getUrl(host, port))
@@ -254,12 +275,49 @@ def updateReplica(itemNumber):
     else:
         return {'result': 0}
 
+@app.route('/update_replica_stock/<string:itemNumber>/<string:quantity>', methods=['GET'])
+def updateReplicaStock(itemNumber, quantity):
+    try:
+        response = updateStock(itemNumber, quantity)
+    except Exception:
+        return {'result': -1}
+    else:
+        return {'result': 0}
+
+@app.route('/update_replica_cost/<string:itemNumber>/<string:quantity>', methods=['GET'])
+def updateReplicaCost(itemNumber, quantity):
+    try:
+        response = updateCost(itemNumber, quantity)
+    except Exception:
+        return {'result': -1}
+    else:
+        return {'result': 0}
+
 
 # ROUTE: /updateCost/itemNumber/value
 @app.route('/updateCost/<int:itemNumber>/<int:value>')
 def updateCostRoute(itemNumber, value, dataLoading=False):
     requests.get(app.config.get('frontend_uri') + '/invalidate/' + str(itemNumber))
-    response = updateCost(itemNumber, value)
+
+    with writeLock:
+        response = updateCost(itemNumber, value)
+        print("------")
+        catalogList = app.config.get('replicaList')
+        endpoints = catalogList.split('|')
+        endpointUrlsExcludingCurrentServer = []
+        for x in endpoints:
+            host,port = x.split(':')
+            if(port==app.config.get('port')  and host == app.config.get('host')):
+                print("I am here")
+                continue
+            else:
+                endpointUrlsExcludingCurrentServer.append(getUrl(host, port))
+        
+        for endpoint in endpointUrlsExcludingCurrentServer:
+            try:
+                replicaUpdateRequest =  requests.get(endpoint + '/update_replica_cost/' + str(itemNumber) + '/' + str(value))
+            except Exception as E:
+                print('Exception occurred while writing to replica')
     storeInDatabase('updateCost/' + str(itemNumber)+ '/' + str(value), requestsPath)
     return CatalogItemEncoder().encode(response)
 
@@ -289,6 +347,17 @@ if __name__ == "__main__":
         And start the Flask service.
     """
     app.config['frontend_uri'] = sys.argv[1]
+    app.config['loadbalancer_uri']= sys.argv[2]
+    app.config['host'] = sys.argv[3]
+    app.config['port'] = sys.argv[4]
+    app.config['replicaList'] = sys.argv[5]
+
+    scriptDir = os.path.dirname(__file__)
+    outputPath = './database_{}.db'.format(app.config.get("port"))
+    DATABASE = os.path.join(scriptDir, outputPath)
+    rel_requests_path = 'requests_{}.txt'.format(app.config.get("port"))
+    requestsPath = os.path.join(scriptDir, rel_requests_path)
+
     try:
         with app.app_context():
             cur = get_db().cursor()
@@ -320,7 +389,9 @@ if __name__ == "__main__":
         print('Error :,')
         print( E)
     
-    app.config['port'] = '8080'
-    app.config['host'] = '0.0.0.0'
+    host = app.config['host']
+    port = app.config['port']
     
-    app.run(host='0.0.0.0', port=8080, debug=True, threaded = True)
+    res = requests.get(app.config.get('loadbalancer_uri') + '/@register_catalog@' + host + ':' + port)
+    
+    app.run(host='0.0.0.0', port=port, threaded = True)
