@@ -90,6 +90,7 @@ class LoadBalancer:
         targetReplica = self.getTargetReplicaUsingRoundRobin()
         targetUri = targetReplica.getUrl()
         url = targetUri + request
+        print(url)
         try:
             targetReplica.connections += 1
             res =  requests.get(url)
@@ -198,7 +199,6 @@ if __name__ == "__main__":
             return orderLoadBalancer.processRequest(request)
         # Add details of hosts and ports to each of replicas
         elif requestType in ['register_catalog']:
-            print("nenu ikkadiki vachina")
             replicaUrl = str(request).split('/')[2]
             return catalogLoadBalancer.registerCatalogReplicas(replicaUrl)
         elif requestType in ['register_order']:
