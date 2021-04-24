@@ -39,6 +39,7 @@ class LoadBalancer:
         self.replicas = []
         self.count = 0
         self.lbType = ""
+        self.lock = threading.Lock()
 
     def heartbeat(self):
         while True:
@@ -54,7 +55,6 @@ class LoadBalancer:
         if not self.replicas:
             return None
         targetReplica = self.replicas[self.count % len(self.replicas)]
-        print(str(self.count) + " " + self.lbType)
         self.count += 1
         return targetReplica
 
@@ -91,18 +91,19 @@ class LoadBalancer:
         return False
 
     def processRequest(self, request):
-        targetReplica = self.getTargetReplicaUsingRoundRobin()
-        targetUri = targetReplica.getUrl()
-        url = targetUri + request
-        try:
-            targetReplica.connections += 1
-            res = requests.get(url)
-            targetReplica.connections -= 1
-        except Exception as E:
-            print("Retrying...")
-            targetReplica.connections += 1
-            res = requests.get(url)
-            targetReplica.connections -= 1
+        with self.lock:
+            targetReplica = self.getTargetReplicaUsingRoundRobin()
+            targetUri = targetReplica.getUrl()
+            url = targetUri + request
+            try:
+                targetReplica.connections += 1
+                res = requests.get(url)
+                targetReplica.connections -= 1
+            except Exception as E:
+                print("Retrying...")
+                targetReplica.connections += 1
+                res = requests.get(url)
+                targetReplica.connections -= 1
         return res.content
 
     def resync(endpoint, targetEndpoint, path="/resync"):

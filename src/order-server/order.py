@@ -42,7 +42,6 @@ if __name__ == "__main__":
     app.config["loadbalancer_uri"] = sys.argv[1]
     app.config["host"] = sys.argv[2]
     app.config["port"] = sys.argv[3]
-    app.config["replicaList"] = sys.argv[4]
 
     host = app.config["host"]
     port = app.config["port"]

@@ -332,7 +332,7 @@ def updateReplica(itemNumber):
     except Exception:
         return {"res": "Exception in updating the replica"}
     else:
-        return {"res": "Something went wrong while updating the replica"}
+        return {"res": "Something went wrong while updating `the replica"}
 
 
 @app.route(
@@ -402,38 +402,37 @@ if __name__ == "__main__":
     DATABASE = os.path.join(scriptDir, outputPath)
     rel_requests_path = "requests_{}.txt".format(app.config.get("port"))
     requestsPath = os.path.join(scriptDir, rel_requests_path)
+    data_path = os.path.join(scriptDir, './data.json')
+    f = open(data_path)
+    json_data = json.load(f)
 
     try:
         with app.app_context():
             cur = get_db().cursor()
-            count = cur.execute(
-                """ SELECT count(name) FROM sqlite_master WHERE type='table' AND name='books' """
-            )
-            count = count.fetchone()["count(name)"]
-            if count == 1:
-                print("Table exists")
+            CREATE_SQL =  "CREATE TABLE IF NOT EXISTS BOOKS (itemNumber text, title text,  stock text, cost text, topic text);"
+            DELETE_SQL = "DROP TABLE IF EXISTS BOOKS;"    
+
+            #create cache table
+            cur.execute(DELETE_SQL)
+            cur.execute(CREATE_SQL)
+
+            books = []
+            for row in json_data['books']:
+                itemNumber = row["itemNumber"]
+                title = row["title"]
+                stock = row["stock"]
+                cost = row["cost"]
+                topic = row["topic"]
+                data = (itemNumber, title, stock, cost, topic)
+                books.append(data)
+            try:
+                cur = get_db().cursor()
+                cur.executemany("insert into BOOKS values(?,?,?,?,?)", books)
+            except Exception as E:
+                print("Errorrr", E)
             else:
-                cur.execute(
-                    "create table books (itemNumber text, title text,  stock text, cost text, topic text)"
-                )
-                print("table created")
-                books = []
-                for row in json_data:
-                    itemNumber = row["itemNumber"]
-                    title = row["title"]
-                    stock = row["stock"]
-                    cost = row["cost"]
-                    topic = row["topic"]
-                    data = (itemNumber, title, stock, cost, topic)
-                    books.append(data)
-                try:
-                    cur = get_db().cursor()
-                    cur.executemany("insert into books values(?,?,?,?,?)", books)
-                except Exception as E:
-                    print("Error", E)
-                else:
-                    get_db().commit()
-                    print("data inserted")
+                get_db().commit()
+                print("data inserted")
     except Exception as E:
         print("Error :,")
         print(E)

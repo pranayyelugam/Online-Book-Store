@@ -22,7 +22,7 @@ def callTests(frontendUri):
                 if item['topic'] == "Distributed Systems":
                     count = count + 1
             
-            if count == 2:
+            if count == 3:
                 f.write("Test Case 1 Passed\n")
             else:
                 f.write("Test Case 1 Failed\n")
