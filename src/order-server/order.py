@@ -50,4 +50,4 @@ if __name__ == "__main__":
         app.config.get("loadbalancer_uri") + "/@register_order@" + host + ":" + port
     )
 
-    app.run(host=host, port=port)
+    app.run(host='0.0.0.0', port=port)

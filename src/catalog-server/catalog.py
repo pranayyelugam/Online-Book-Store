@@ -445,4 +445,4 @@ if __name__ == "__main__":
         app.config.get("loadbalancer_uri") + "/@register_catalog@" + host + ":" + port
     )
 
-    app.run(host=host, port=port, threaded=True)
+    app.run(host='0.0.0.0', port=port, threaded=True)

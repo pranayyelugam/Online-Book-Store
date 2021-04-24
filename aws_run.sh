@@ -35,5 +35,9 @@ ssh -i $pem_file ec2-user@$catalogdns_2 "sudo yum install -y python3.7; cd catal
 sleep 2  
 ssh -i $pem_file ec2-user@$orderdns_1 "sudo yum install -y python3.7; cd order-server; python3 --version; sudo pip3 install -r requirements.txt; /usr/sbin/lsof -i:8084 -t | xargs kill -KILL ; python3 order.py http://$loadbalancerdns:8080  $orderdns_1 8084" &
 sleep 2 
-ssh -i $pem_file ec2-user@$orderdns_2 "sudo yum install -y python3.7; cd order-server; python3 --version; sudo pip3 install -r requirements.txt; /usr/sbin/lsof -i:8085 -t | xargs kill -KILL ; python3 order.py http://$loadbalancerdns:8080  $orderdns_2 8085" 
+ssh -i $pem_file ec2-user@$orderdns_2 "sudo yum install -y python3.7; cd order-server; python3 --version; sudo pip3 install -r requirements.txt; /usr/sbin/lsof -i:8085 -t | xargs kill -KILL ; python3 order.py http://$loadbalancerdns:8080  $orderdns_2 8085" &
+sleep 5
+python ./client-process/client.py "http://$frontenddns:8081" &
+sleep 5
+python ./tests/tests.py "http://$frontenddns:8081"  "http://$catalogdns_1:8082"  &
 
