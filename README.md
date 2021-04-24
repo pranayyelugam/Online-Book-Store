@@ -2,11 +2,11 @@
 
 A multi-tier buyer-seller project
 
- **LOCAL EXECUTION **:
+ **LOCAL EXECUTION**:
  To run the project locally:
   Execute **sh run.sh**.
 
- **AWS EXECUTION **:
+ **AWS EXECUTION**:
  To run the project on AWS:
   1) Update the config.txt with the following
        - Add the key-pair file path in the first line
@@ -16,7 +16,7 @@ A multi-tier buyer-seller project
   5) You can access the frontend server at http://frontenddns:8081/
   6) An example url to test would be http://frontenddns:8081/lookup/3
 
- **DOCKER EXECUTION **: 
+ **DOCKER EXECUTION**: 
 To run the project on DOCKER:
   1) cd docker 
   2) Execute the following bash script **sh run_docker_images.sh** . This will pull the containers from docker hub and executes docker run for every micro      service locally.
