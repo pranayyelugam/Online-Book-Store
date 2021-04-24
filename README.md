@@ -11,8 +11,8 @@ AWS EXECUTION: To run the project on AWS:
        - Add loadbalancer, frontend, catalog-1, catalog-2, order-1 and order-2 dns in new lines.
   2) After the above step is done execute the following **sh aws_run.sh $(cat config.txt)**
   3) The above commands will copy the code to the respective servers, installs python, installs the requirements and runs the flask app on the server.
-  5) You can access the frontend server at http://<frontenddns>:8081/
-  6) An example url to test would be http://<frontenddns>:8081/lookup/3
+  5) You can access the frontend server at http://frontenddns:8081/
+  6) An example url to test would be http://frontenddns:8081/lookup/3
 
 DOCKER EXECUTION: 
 To run the project on DOCKER:
