@@ -1,0 +1,8 @@
+{
+    "docker" :{
+        "8082": "docker run --network=pygmy -p 8082:8082 --name catalog-1 --env PORT=8082 --env HOST=catalog-1 cs",
+        "8083": "docker run --network=pygmy -p 8083:8083 --name catalog-1 --env PORT=8083 --env HOST=catalog-2 cs",
+        "8084": "docker run --network=pygmy -p 8084:8084 --name order-1 --env PORT=8084 --env HOST=order-1 os",
+        "8085": "docker run --network=pygmy -p 8085:8085 --name order-1 --env PORT=8085 --env HOST=order-2 os"
+    }
+}

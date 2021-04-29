@@ -28,39 +28,6 @@ def close_connection(exception):
         db.close()
 
 
-# Sample data json
-json_data = [
-    {
-        "itemNumber": "1",
-        "title": "How to get a good grade in 677 in 20 minutes a day.",
-        "stock": "15",
-        "cost": "20",
-        "topic": "Distributed Systems",
-    },
-    {
-        "itemNumber": "2",
-        "title": "RPCs for Dummies",
-        "stock": "15",
-        "cost": "15",
-        "topic": "Distributed Systems",
-    },
-    {
-        "itemNumber": "3",
-        "title": "Xen and the Art of Surviving Graduate School.",
-        "stock": "15",
-        "cost": "10",
-        "topic": "Graduate School",
-    },
-    {
-        "itemNumber": "4",
-        "title": "Cooking for the Impatient Graduate Student.",
-        "stock": "15",
-        "cost": "5",
-        "topic": "Graduate School",
-    },
-]
-
-
 scriptDir = os.path.dirname(__file__)
 rel_database_path = "database.txt"
 rel_requests_path = "requests.txt"
@@ -335,9 +302,7 @@ def updateReplica(itemNumber):
         return {"res": "Something went wrong while updating `the replica"}
 
 
-@app.route(
-    "/update_replica_stock/<string:itemNumber>/<string:quantity>", methods=["GET"]
-)
+@app.route("/update_replica_stock/<string:itemNumber>/<string:quantity>", methods=["GET"])
 def updateReplicaStock(itemNumber, quantity):
     """ Update the stock value of an item with a given value in the replica """
 
@@ -368,6 +333,34 @@ def updateReplicaCost(itemNumber, quantity):
 @app.route("/")
 def checkAlive():
     return "Hey! I'm well and alive. Don't worry about me"
+
+@app.route("/resync/<string:target>", methods=['GET'])
+def syncWithAliveTargetDb(target):
+    target = "http://" + target
+    print(target + "=========")
+    resp = requests.get(target+"/get_db")
+    stocks = resp.json()['stocks']
+    db = None
+    for itemNumber in stocks:
+        db = updateStock(itemNumber, stocks[itemNumber])
+        db = updateCost(itemNumber, stocks[itemNumber])
+    print(db)
+    return resp.json()
+
+@app.route("/get_db", methods=['GET'])
+def getCurrentDbState():
+    stock_data = {}
+    cost_data = {}
+    with lock:
+        books = getAllCatalogItems()
+        for book in books:
+            stock_data[book['itemNumber']] = book['stock']
+            cost_data[book['itemNumber']] = book['cost']
+    return ({
+        'stocks': stock_data,
+        'costs': cost_data
+    })
+
 
 
 def storeInDatabase(res, fileName):

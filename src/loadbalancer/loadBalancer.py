@@ -1,11 +1,12 @@
-import os, time, sys
+import os, time, sys, json
 from flask import Flask
 import requests
 import threading
 import subprocess
 
 app = Flask(__name__)
-
+scriptDir = os.path.dirname(__file__)
+runType = None
 
 class Replica:
     def __init__(self, host, port, path="/"):
@@ -39,15 +40,10 @@ class LoadBalancer:
         self.replicas = []
         self.count = 0
         self.lbType = ""
+        data_path = os.path.join(scriptDir, './spawning.json')
+        f = open(data_path)
+        self.json_data = json.load(f)[runType]
         self.lock = threading.Lock()
-
-    def heartbeat(self):
-        while True:
-            for i, replica in enumerate(self.replicas):
-                if replica.isReplicaAlive() == False:
-                    self.removeReplica(i)
-
-            time.sleep(5)
 
     def getTargetReplicaUsingRoundRobin(self):
         ## TODO ## catalog requests are not being load balanced
@@ -72,16 +68,15 @@ class LoadBalancer:
         """ Adds the input replica to the list of replicas """
         replica = Replica(host, port)
         if self.isReplicaPresentAlready(replica) == False:
-            for x in self.replicas:
-                print(x.getUrl())
             self.replicas.append(replica)
             return "True"
         return "False"
 
-    def removeReplica(self, replica):
+    def removeReplica(self, replica, index):
         """ Removes the replica from the list of replicas as the replica is down"""
         if replica in self.replicas:
-            del self.replicas[replica]
+            with self.lock:
+                del self.replicas[index]
 
     def isReplicaPresentAlready(self, replica):
         """ Check if the input replica is already in the list of replicas"""
@@ -106,42 +101,43 @@ class LoadBalancer:
                 targetReplica.connections -= 1
         return res.content
 
-    def resync(endpoint, targetEndpoint, path="/resync"):
-        while True:
-            resp = requests.get(endpoint + path + "/" + targetEndpoint)
-            if resp.status_code == 200:
-                break
+    def resync(self, endpoint, host, port, path="/resync"):
+        print(endpoint + path + "/" + host + ":" + port)
+        resp = requests.get(endpoint + path + "/" + host + ":" + port)
 
+    def spawnReplicas(self):
+        aliveServerToSync = None
+        while True:
+            for i, r in enumerate(self.replicas):
+                if r.isReplicaAlive() == False:
+                    print("server dead")
+                    # Get the port of the dead replica
+                    deadServerPort = r.port
+                    # Remove server from the list of replicas
+                    self.removeReplica(r, i)
+                    # Spawn the server
+                    spawnCommand = self.json_data[deadServerPort]
+                    subprocess.Popen([str(spawnCommand)], shell=True,  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    # If server type is catalog, then sync the db between the replicas
+                    if self.lbType == "Catalog":
+                        # Wait for the server to come alive
+                        time.sleep(3)
+                        # Check if the server is active
+                        if r.isReplicaAlive() == True:
+                            # Sync with the alive db
+                            self.resync(r.getUrl(), aliveServerToSync.host, aliveServerToSync.port)
+                else:
+                    aliveServerToSync = r
+            time.sleep(1)
 
 class CatalogLoadBalanceManager(LoadBalancer):
     def __init__(self):
         super().__init__()
         self.lbType = "Catalog"
-        ## TODO ##
-        # Add the files in the sh files
-        self.spawnCommand = "python ../catalog-server-B/catalog.py http://0.0.0.0:8081"
 
     def registerCatalogReplicas(self, request):
         host, port = request.split(":")
         return self.registerReplica(host, port)
-
-    def spawnReplicas(self):
-        while True:
-            aliveServerToSync = None
-            for i, replica in enumerate(self.replicas):
-                if replica.alive == False:
-                    print("server dead")
-                    # Spawn the server
-                    subprocess.call([str(self.spawnCommand)], shell=True)
-                    # Wait for the server to come alive
-                    time.sleep(10)
-                    # Check if the server is active
-                    if replica.alive == True:
-                        # Sync with the alive db
-                        super().resync(replica.getUrl(), aliveServerToSync.getUrl())
-                    time.sleep(5)
-                else:
-                    aliveServerToSync = replica
 
 
 class OrderloadBalanceManager(LoadBalancer):
@@ -153,43 +149,31 @@ class OrderloadBalanceManager(LoadBalancer):
         host, port = request.split(":")
         return self.registerReplica(host, port)
 
-    def spawnReplicas(self):
-        while True:
-            for i, replica in enumerate(self.replicas):
-                if replica.alive == False:
-                    print("server dead")
-                    time.sleep(5)
-
 
 if __name__ == "__main__":
+
+    configPath = os.path.join(scriptDir, './spawnConfig.txt')
+    f = open(configPath)
+    runType = f.readline()
+
 
     # Create objects for catalog and order LBs
     catalogLoadBalancer = CatalogLoadBalanceManager()
     orderLoadBalancer = OrderloadBalanceManager()
-
-    """    
-    ----   TODO Threads to sync and update dbs ------ 
-
-    # Start checking for the catalog replicas heartbeat
-    catalogHeartbeatThread = threading.Thread(target = catalogLoadBalancer.heartbeat)
-    catalogHeartbeatThread.start()
-
-    # Start checking for the catalog replicas heartbeat
-    orderHeartbeatThread = threading.Thread(target = orderLoadBalancer.heartbeat)
-    orderHeartbeatThread.start()
-
-    orderReplicaSpawnThread = threading.Thread(target = catalogLoadBalancer.spawnReplicas)
+    
+    # Threads to check if the servers are alive and respawn if they are dead.
+    orderReplicaSpawnThread = threading.Thread(target = orderLoadBalancer.spawnReplicas)
     orderReplicaSpawnThread.start()
 
     catalogReplicaSpawnThread = threading.Thread(target = catalogLoadBalancer.spawnReplicas)
     catalogReplicaSpawnThread.start()
 
-    """
-
+    # index route
     @app.route("/")
     def alive():
         return "alive"
 
+    # main request route
     @app.route("/<request>")
     def loadBalancer(request):
         requestType = str(request).split("@")[1]

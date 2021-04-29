@@ -1,3 +1,4 @@
+echo "local"  > ./src/loadbalancer/spawnConfig.txt
 python ./src/loadbalancer/loadBalancer.py &
 sleep 2 
 python ./src/frontend-server/frontend.py http://0.0.0.0:8080 &
