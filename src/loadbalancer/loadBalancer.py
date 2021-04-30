@@ -7,6 +7,7 @@ import subprocess
 app = Flask(__name__)
 scriptDir = os.path.dirname(__file__)
 runType = None
+log = os.path.join(scriptDir, './loadBalancerLog.txt')
 
 class Replica:
     def __init__(self, host, port, path="/"):
@@ -44,6 +45,7 @@ class LoadBalancer:
         f = open(data_path)
         self.json_data = json.load(f)[runType]
         self.lock = threading.Lock()
+        self.logLock = threading.Lock()
 
     def getTargetReplicaUsingRoundRobin(self):
         ## TODO ## catalog requests are not being load balanced
@@ -92,9 +94,21 @@ class LoadBalancer:
             url = targetUri + request
             try:
                 targetReplica.connections += 1
-                res = requests.get(url)
+                res = requests.get(url, timeout=5)
                 targetReplica.connections -= 1
+                if res.status_code != 200:
+                    targetReplica = self.getTargetReplicaUsingRoundRobin()
+                    targetUri = targetReplica.getUrl()
+                    url = targetUri + request
+                    targetReplica.connections += 1
+                    res = requests.get(url)
+                    targetReplica.connections -= 1
             except Exception as E:
+                with self.logLock:
+                    file = open(log, "a+")
+                    file.write("Retrying...")
+                    file.write("{}\n".format(E))
+                    file.close()
                 print("Retrying...")
                 targetReplica.connections += 1
                 res = requests.get(url)
@@ -117,18 +131,30 @@ class LoadBalancer:
                     self.removeReplica(r, i)
                     # Spawn the server
                     spawnCommand = self.json_data[deadServerPort]
-                    subprocess.Popen([str(spawnCommand)], shell=True,  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    with self.logLock:
+                        file = open(log, "a+")
+                        file.write("{}\n".format(spawnCommand))
+                        file.close()
+                    time.sleep(1)
+                    try:
+                        subprocess.Popen([str(spawnCommand)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    except Exception as E:
+                        with self.logLock:
+                            file = open(log, "a+")
+                            file.write("{}\n".format(E))
+                            file.close()
+                        print(E)                    
                     # If server type is catalog, then sync the db between the replicas
                     if self.lbType == "Catalog":
                         # Wait for the server to come alive
-                        time.sleep(3)
+                        time.sleep(10)
                         # Check if the server is active
                         if r.isReplicaAlive() == True:
                             # Sync with the alive db
                             self.resync(r.getUrl(), aliveServerToSync.host, aliveServerToSync.port)
                 else:
                     aliveServerToSync = r
-            time.sleep(1)
+            time.sleep(0.1)
 
 class CatalogLoadBalanceManager(LoadBalancer):
     def __init__(self):

@@ -1,14 +1,14 @@
 {
     "local" :{
-        "8082": "python ./catalog-server/catalog.py http://0.0.0.0:8081 http://0.0.0.0:8080 0.0.0.0 8082 '0.0.0.0:8082|0.0.0.0:8083'",
-        "8083": "python ./catalog-server/catalog.py http://0.0.0.0:8081 http://0.0.0.0:8080 0.0.0.0 8083 '0.0.0.0:8082|0.0.0.0:8083'",
-        "8084": "python ./order-server/order.py http://0.0.0.0:8080 0.0.0.0 8084",
-        "8085": "python ./order-server/order.py http://0.0.0.0:8080 0.0.0.0 8085"
+        "8082": "python ./src/catalog-server/catalog.py http://0.0.0.0:8081 http://0.0.0.0:8080 0.0.0.0 8082 '0.0.0.0:8082|0.0.0.0:8083'",
+        "8083": "python ./src/catalog-server/catalog.py http://0.0.0.0:8081 http://0.0.0.0:8080 0.0.0.0 8083 '0.0.0.0:8082|0.0.0.0:8083'",
+        "8084": "python ./src/order-server/order.py http://0.0.0.0:8080 0.0.0.0 8084",
+        "8085": "python ./src/order-server/order.py http://0.0.0.0:8080 0.0.0.0 8085"
     },
     "aws" : {
-        "8084": "sh ./spawn.sh $(cat ../../config.txt) 8084",
-        "8085": "sh ./spawn.sh $(cat ../../config.txt) 8085",
-        "8083": "sh ./spawn.sh $(cat ../../config.txt) 8083",
-        "8082": "sh ./spawn.sh $(cat ../../config.txt) 8082"
+        "8084": "sh ./spawn.sh $(cat ./aws.txt) 8084",
+        "8085": "sh ./spawn.sh $(cat ./aws.txt) 8085",
+        "8083": "sh ./spawn.sh $(cat ./aws.txt) 8083",
+        "8082": "sh ./spawn.sh $(cat ./aws.txt) 8082"
     }
 }
