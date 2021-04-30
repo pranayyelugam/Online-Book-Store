@@ -1,5 +1,5 @@
-set -o noclobber
-echo "local"  > ./src/loadbalancer/spawnConfig.txt
+
+printf "local"  > ./src/loadbalancer/spawnConfig.txt
 
 python ./src/loadbalancer/loadBalancer.py &
 sleep 2 

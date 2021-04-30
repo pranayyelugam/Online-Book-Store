@@ -147,7 +147,7 @@ class LoadBalancer:
                     # If server type is catalog, then sync the db between the replicas
                     if self.lbType == "Catalog":
                         # Wait for the server to come alive
-                        time.sleep(3)
+                        time.sleep(5)
                         # Check if the server is active
                         if r.isReplicaAlive() == True:
                             # Sync with the alive db

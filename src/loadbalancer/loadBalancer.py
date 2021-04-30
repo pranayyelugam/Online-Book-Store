@@ -147,14 +147,14 @@ class LoadBalancer:
                     # If server type is catalog, then sync the db between the replicas
                     if self.lbType == "Catalog":
                         # Wait for the server to come alive
-                        time.sleep(10)
+                        time.sleep(5)
                         # Check if the server is active
                         if r.isReplicaAlive() == True:
                             # Sync with the alive db
                             self.resync(r.getUrl(), aliveServerToSync.host, aliveServerToSync.port)
                 else:
                     aliveServerToSync = r
-            time.sleep(0.1)
+            time.sleep(2)
 
 class CatalogLoadBalanceManager(LoadBalancer):
     def __init__(self):
