@@ -1,0 +1,8 @@
+## with caching
+Average time for lookup requests is: 7.9524370000000095
+Average time for buy requests is: 33.16317900000002
+Average time for search requests is: 8.708811999999998
+## without caching
+Average time for lookup requests is: 20.60246199999998
+Average time for buy requests is: 36.84161799999998
+Average time for search requests is: 20.128705000000018

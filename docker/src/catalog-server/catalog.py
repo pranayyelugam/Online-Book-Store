@@ -199,6 +199,8 @@ def updateStockRoute(itemNumber, value, dataLoading=False):
     requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(itemNumber))
     with lock:
         response = updateStock(itemNumber, value)
+        topic = response[0]['topic']
+        requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(topic))
         ## TODO ##
         # How do I get the endpoint of other servers here?
         catalogList = app.config.get("replicaList")
@@ -235,6 +237,8 @@ def reduceOneStock(itemNumber, dataLoading=False):
     requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(itemNumber))
     with lock:
         response = reduceStock(itemNumber)
+        topic = response[0]['topic']
+        requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(topic))
         catalogList = app.config.get("replicaList")
         endpoints = catalogList.split("|")
         endpointUrlsExcludingCurrentServer = []
@@ -265,6 +269,8 @@ def updateCostRoute(itemNumber, value, dataLoading=False):
     requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(itemNumber))
     with lock:
         response = updateCost(itemNumber, value)
+        topic = response[0]['topic']
+        requests.get(app.config.get("frontend_uri") + "/invalidate/" + str(topic))
         catalogList = app.config.get("replicaList")
         endpoints = catalogList.split("|")
         endpointUrlsExcludingCurrentServer = []

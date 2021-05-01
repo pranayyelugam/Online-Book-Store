@@ -1,0 +1,36 @@
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"0","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"0","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"The item is out of stock","res":""}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"0","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"0","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"},{"cost":"1500","itemNumber":"2","stock":"1500","title":"RPCs for Dummies","topic":"Distributed Systems"},{"cost":"5","itemNumber":"5","stock":"1500","title":"How to finish Project 3 on time.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"25","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"25","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"20","itemNumber":"1","stock":"1500","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"},{"cost":"1500","itemNumber":"2","stock":"1500","title":"RPCs for Dummies","topic":"Distributed Systems"},{"cost":"5","itemNumber":"5","stock":"1500","title":"How to finish Project 3 on time.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"25","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"25","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"},{"cost":"1500","itemNumber":"2","stock":"1500","title":"RPCs for Dummies","topic":"Distributed Systems"},{"cost":"5","itemNumber":"5","stock":"1500","title":"How to finish Project 3 on time.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"24","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"},{"cost":"1500","itemNumber":"2","stock":"1500","title":"RPCs for Dummies","topic":"Distributed Systems"},{"cost":"5","itemNumber":"5","stock":"1500","title":"How to finish Project 3 on time.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"23","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"}]}
+
+{"msg":"","res":[{"cost":"25","itemNumber":"1","stock":"23","title":"How to get a good grade in 677 in 20 minutes a day.","topic":"Distributed Systems"},{"cost":"1500","itemNumber":"2","stock":"1500","title":"RPCs for Dummies","topic":"Distributed Systems"},{"cost":"5","itemNumber":"5","stock":"1500","title":"How to finish Project 3 on time.","topic":"Distributed Systems"}]}
+

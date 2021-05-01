@@ -1,0 +1,8 @@
+Average time for lookup requests is: 26.796
+Average time for lookup requests is: 7.043
+Average time for buy requests is: 61.122
+Average time for lookup requests is: 19.894
+Average time for search requests is: 21.699
+Average time for search requests is: 7.292
+Average time for buy requests is: 59.417
+Average time for search requests is: 21.163

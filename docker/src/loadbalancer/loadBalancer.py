@@ -104,6 +104,9 @@ class LoadBalancer:
                     res = requests.get(url)
                     targetReplica.connections -= 1
             except Exception as E:
+                targetReplica = self.getTargetReplicaUsingRoundRobin()
+                targetUri = targetReplica.getUrl()
+                url = targetUri + request
                 with self.logLock:
                     file = open(log, "a+")
                     file.write("Retrying...")

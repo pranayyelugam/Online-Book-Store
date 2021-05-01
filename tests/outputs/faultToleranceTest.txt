@@ -1,0 +1,4 @@
+Average time for buy requests is: 0.051184
+Average time for buy requests is: 0.053607999999999996
+Average time for buy requests is: 0.050838
+Average time for buy requests is: 0.051523000000000006
