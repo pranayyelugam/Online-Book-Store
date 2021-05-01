@@ -23,7 +23,7 @@ def faultToleranceTest():
     for query in queryList:
         totalRequestTime = 0
 
-        for i in range(1):
+        for i in range(10):
             requestStart = datetime.datetime.now()
             resp = requests.get(local + query)
             output = open(averageTimeCacheOutput, 'a+')
