@@ -1,10 +1,10 @@
 cd src &&
 cd loadbalancer &&
-docker build -f Dockerfile --tag lb . &&
+docker build -f Dockerfile --tag pranay_lb . &&
 cd ../frontend-server &&
-docker build -f Dockerfile --tag fs . &&
+docker build -f Dockerfile --tag pranay_fs . &&
 cd ../catalog-server &&
-docker build -f Dockerfile --tag cs . &&
+docker build -f Dockerfile --tag pranay_cs . &&
 cd ../order-server &&
-docker build -f Dockerfile --tag os . &&
+docker build -f Dockerfile --tag pranay_os . &&
 cd ../../
