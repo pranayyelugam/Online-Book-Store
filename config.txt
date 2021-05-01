@@ -1,7 +1,7 @@
-./677kp.pem
-100.24.238.53
-54.160.98.159
-100.24.237.241
-54.172.38.64
-52.87.154.221
-100.25.188.65	
+<Key path>
+<loadbalancerdns>
+<frontenddns>
+<catalogdns_1>
+<catalogdns_2>
+<orderdns_1>
+<orderdns_2>
