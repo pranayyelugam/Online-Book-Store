@@ -19,8 +19,8 @@ A multi-tier buyer-seller project
  **DOCKER EXECUTION**: 
 To run the project on DOCKER:
   1) cd docker 
-  2) Compile: Execute sh build_docker_images_locally.sh for building the containers locally.
-  3) Run: To execute this project on docker, execute sh run_docker_images.sh in the docker folder of the repository. This will run the micro-services on the local machine. .
+  2) Compile: Execute **sh build_docker_images_locally.sh** for building the containers locally.
+  3) Run: To execute this project on docker, execute **sh run_docker_images.sh** in the docker folder of the repository. This will run the micro-services on the local machine. .
   4) You can access the frontend server at http://0.0.0.0:8081/
   5) An example url to test would be http://0.0.0.0:8081/lookup/3
   
