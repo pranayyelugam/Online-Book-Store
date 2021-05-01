@@ -19,9 +19,10 @@ A multi-tier buyer-seller project
  **DOCKER EXECUTION**: 
 To run the project on DOCKER:
   1) cd docker 
-  2) Execute the following bash script **sh run_docker_images.sh** . This will pull the containers from docker hub and executes docker run for every micro      service locally.
-  3) You can access the frontend server at http://0.0.0.0:8081/
-  4) An example url to test would be http://0.0.0.0:8081/lookup/3
+  2) Compile: Execute sh build_docker_images_locally.sh for building the containers locally.
+  3) Run: To execute this project on docker, execute sh run_docker_images.sh in the docker folder of the repository. This will run the micro-services on the local machine. .
+  4) You can access the frontend server at http://0.0.0.0:8081/
+  5) An example url to test would be http://0.0.0.0:8081/lookup/3
   
 To kill the micro services in the docker containers:
   1) docker rm --force loadbalancer frontend catalog-1 catalog-2 order-1 order-2
